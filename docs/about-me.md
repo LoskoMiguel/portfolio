@@ -84,7 +84,6 @@ empresa del sector inmobiliario y trabajando actualmente por prestación de serv
 
 ### Bachillerato
 **Institución Educativa Jorge Eliécer Gaitán** — Bello, Antioquia, Colombia — 2025
-- Certificado: https://github.com/LoskoMiguel/certificados/releases/download/1.0/certificado.bachillerato.pdf
 
 ## Idiomas
 - **Español:** Nativo
