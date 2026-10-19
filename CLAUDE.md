@@ -11,6 +11,7 @@ A single-page personal portfolio site (Miguel Ángel Posada Marín, backend deve
 - `npm run dev` — start the dev server at `localhost:4321`
 - `npm run build` — runs `astro check` (type checking) then `astro build`; type errors fail the build
 - `npm run preview` — serve the production build locally
+- `npm run cv` — build, then print `src/pages/cv.astro` to `public/cv/cv_miguel_angel_posada.pdf` via headless Google Chrome (`scripts/build-cv.mjs`; override the binary with `CHROME_PATH`)
 - `npm run astro -- <cmd>` — run other Astro CLI commands (e.g. `astro add`)
 
 There is no test suite and no separate lint command configured.
@@ -19,7 +20,9 @@ There is no test suite and no separate lint command configured.
 
 **Content/component separation.** All visible site copy (personal info, stack, experience, education, projects, nav links) lives in `src/data/profile.ts` as typed exports (`personal`, `stack`, `experience`, `education`, `languages`, `projects`, `nav`). Components import from this file rather than hardcoding text — keep it that way when editing content. The source of truth for this data is `docs/about-me.md` (a Spanish-language personal info doc); update both when personal/professional info changes.
 
-**Page composition.** `src/pages/index.astro` is the only page. It wraps everything in `src/layouts/BaseLayout.astro` and assembles section components in order: `Nav`, `Hero`, `About`, `Stack`, `Experience`, `Projects`, `Education`, `Contact`, `Footer`. Each section is a self-contained `.astro` component under `src/components/` with its own scoped `<style>` block — there's no shared component library beyond the CSS custom properties in global styles.
+**Page composition.** `src/pages/index.astro` is the portfolio page. It wraps everything in `src/layouts/BaseLayout.astro` and assembles section components in order: `Nav`, `Hero`, `About`, `Stack`, `Experience`, `Projects`, `Education`, `Contact`, `Footer`. Each section is a self-contained `.astro` component under `src/components/` with its own scoped `<style>` block — there's no shared component library beyond the CSS custom properties in global styles.
+
+**CV page.** `src/pages/cv.astro` is a standalone, print-styled (Letter, light theme, `noindex`) résumé built from the same `profile.ts` data — it doesn't use `BaseLayout` or the dark design tokens. Only projects with a `summary` appear on it. Regenerate the PDF with `npm run cv` after changing CV-relevant data.
 
 **Design tokens.** `src/styles/global.css` defines the full design system as CSS custom properties on `:root`: colors (`--bg`, `--ink`, `--accent`, `--line`, etc.), fonts (`--font-display` = Space Grotesk, `--font-body` = IBM Plex Sans, `--font-mono` = IBM Plex Mono), font-size scale (`--fs-2xs` … `--fs-3xl`), spacing, radii, and easing. The theme is dark-only (`color-scheme: dark`), styled as a "backend systems console" with an amber accent — reuse these tokens in new components instead of introducing new literal colors/sizes.
 

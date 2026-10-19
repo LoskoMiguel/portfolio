@@ -2,7 +2,7 @@
 import { Image } from "astro:assets";
 import { projects } from "../data/profile";
 
-const initialCount = 6;
+const initialCount = 4;
 const hasMore = projects.length > initialCount;
 ---
 
@@ -15,69 +15,126 @@ const hasMore = projects.length > initialCount;
       </div>
     </div>
 
-    <div class="projects-grid">
+    <div class="projects-list">
       {
-        projects.map((project, i) => (
-          <article
-            class={`project-card reveal${i >= initialCount ? " project-card-extra" : ""}`}
-            style={`transition-delay:${(i % 3) * 80}ms`}
-          >
-            {project.screenshots && project.screenshots.length > 0 && (
-              <button
-                type="button"
-                class="project-preview"
-                data-project-lightbox={`project-${i}`}
-                aria-label={`Ver capturas de ${project.name}`}
-              >
-                <Image src={project.screenshots[0]} alt={`${project.name} — captura de pantalla`} width={480} class="preview-photo" />
-              </button>
-            )}
+        projects.map((project, i) => {
+          const shots = project.screenshots ?? [];
+          const group = `project-${i}`;
+          return (
+            <article class={`project reveal${i >= initialCount ? " project-extra" : ""}`}>
+              {shots.length > 0 && (
+                <div class="gallery" data-gallery={group}>
+                  <button
+                    type="button"
+                    class="gallery-main"
+                    data-open-lightbox={group}
+                    aria-label={`Ampliar capturas de ${project.name}`}
+                  >
+                    {shots.map((shot, si) => (
+                      <Image
+                        src={shot}
+                        alt={`${project.name}, captura ${si + 1} de ${shots.length}`}
+                        width={960}
+                        class:list={["gallery-photo", { "is-active": si === 0 }]}
+                        data-index={si}
+                      />
+                    ))}
+                    <span class="gallery-expand">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                      </svg>
+                      Ampliar
+                    </span>
+                    {shots.length > 1 && (
+                      <span class="gallery-count mono">
+                        <span data-current>1</span> / {shots.length}
+                      </span>
+                    )}
+                  </button>
 
-            {project.placeholder && (
-              <div class="project-preview project-preview-restricted" aria-hidden="true">
-                <svg viewBox="0 0 24 24" class="restricted-icon" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <rect x="5" y="11" width="14" height="9" rx="1.5" />
-                  <path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
-                </svg>
-                <p class="restricted-text mono">Sistema interno — sin capturas por motivos de seguridad</p>
-              </div>
-            )}
+                  {shots.length > 1 && (
+                    <div class="gallery-thumbs" role="group" aria-label={`Capturas de ${project.name}`}>
+                      {shots.map((shot, si) => (
+                        <button
+                          type="button"
+                          class:list={["gallery-thumb", { "is-active": si === 0 }]}
+                          data-thumb={si}
+                          aria-label={`Ver captura ${si + 1}`}
+                          aria-pressed={si === 0 ? "true" : "false"}
+                        >
+                          <Image src={shot} alt="" width={200} />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
-            <div class="project-top">
-              <span class="status-badge mono" data-status={project.status}>
-                <span class="status-dot"></span>
-                {project.status}
-              </span>
-              <h3 class="project-name">{project.name}</h3>
-            </div>
+              {project.placeholder && (
+                <div class="gallery gallery-restricted">
+                  <svg viewBox="0 0 24 24" class="restricted-icon" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <rect x="5" y="11" width="14" height="9" rx="1.5" />
+                    <path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
+                  </svg>
+                  <p class="restricted-text">Sistema interno: sin capturas por motivos de seguridad</p>
+                </div>
+              )}
 
-            <p class="project-desc">{project.description}</p>
+              <div class="project-body">
+                <div class="project-top">
+                  <span class="status-badge mono" data-status={project.status}>
+                    <span class="status-dot" />
+                    {project.status}
+                  </span>
+                  <h3 class="project-name">{project.name}</h3>
+                </div>
 
-            <ul class="project-stack mono">
-              {project.stack.map((s) => (
-                <li>{s}</li>
-              ))}
-            </ul>
+                <p class="project-desc">{project.description}</p>
 
-            <p class="project-role mono">// {project.role}</p>
-            {project.privateRepo && <p class="project-repo mono">// repositorio privado</p>}
+                <div class="project-block">
+                  <p class="block-label">Mi rol</p>
+                  <p class="project-role">{project.role}</p>
+                </div>
 
-            {(project.repoUrl || project.demoUrl) && (
-              <div class="project-links">
-                {project.repoUrl && (
-                  <a class="project-link mono" href={project.repoUrl} target="_blank" rel="noopener noreferrer">
-                    <span class="arrow">↗</span> Repositorio
-                  </a>
+                <div class="project-block">
+                  <p class="block-label">Tecnologías</p>
+                  <ul class="project-stack mono">
+                    {project.stack.map((s) => (
+                      <li>{s}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                {(project.repoUrl || project.demoUrl || project.privateRepo) && (
+                  <div class="project-links">
+                    {project.repoUrl && (
+                      <a class="project-link" href={project.repoUrl} target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                          <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8 0 3.2.9.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1 .9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0 0 12 .3" />
+                        </svg>
+                        Ver repositorio
+                      </a>
+                    )}
+                    {project.demoUrl && (
+                      <a class="project-link" href={project.demoUrl} target="_blank" rel="noopener noreferrer">
+                        Ver demo
+                      </a>
+                    )}
+                    {project.privateRepo && (
+                      <span class="project-link is-disabled">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                          <rect x="5" y="11" width="14" height="9" rx="1.5" />
+                          <path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
+                        </svg>
+                        Repositorio privado
+                      </span>
+                    )}
+                  </div>
                 )}
-                {project.demoUrl && (
-                  <a class="project-link mono" href={project.demoUrl} target="_blank" rel="noopener noreferrer">
-                    <span class="arrow">↗</span> Demo
-                  </a>
-                )}
               </div>
-            )}
-          </article>
-        ))
+            </article>
+          );
+        })
       }
     </div>
 
@@ -85,88 +142,125 @@ const hasMore = projects.length > initialCount;
       hasMore && (
         <div class="show-more-row reveal">
           <button type="button" class="show-more-btn mono" id="toggle-projects" aria-expanded="false">
-            <span class="toggle-label">Ver más proyectos</span> <span class="arrow">↓</span>
+            <span class="toggle-label">Ver {projects.length - initialCount} proyectos más</span> <span class="arrow">↓</span>
           </button>
         </div>
       )
     }
   </div>
 
-  <div class="lightbox" id="project-lightbox" role="dialog" aria-modal="true" aria-hidden="true">
-    <button class="lightbox-close" id="project-lightbox-close" type="button" aria-label="Cerrar imagen">×</button>
-    <button class="lightbox-nav lightbox-prev" id="project-lightbox-prev" type="button" aria-label="Imagen anterior">‹</button>
-    <button class="lightbox-nav lightbox-next" id="project-lightbox-next" type="button" aria-label="Imagen siguiente">›</button>
-    {
-      projects.map((project, i) =>
-        project.screenshots?.map((shot, si) => (
-          <Image
-            src={shot}
-            alt={`${project.name} — captura ${si + 1}`}
-            width={1200}
-            class="lightbox-photo"
-            data-group={`project-${i}`}
-          />
-        ))
-      )
-    }
+  <div class="lightbox" id="project-lightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="lightbox-caption">
+    <div class="lightbox-bar">
+      <p class="lightbox-caption" id="lightbox-caption"></p>
+      <p class="lightbox-counter mono" id="lightbox-counter"></p>
+      <button class="lightbox-close" id="project-lightbox-close" type="button" aria-label="Cerrar">×</button>
+    </div>
+    <button class="lightbox-nav lightbox-prev" id="project-lightbox-prev" type="button" aria-label="Captura anterior">‹</button>
+    <button class="lightbox-nav lightbox-next" id="project-lightbox-next" type="button" aria-label="Captura siguiente">›</button>
+    <div class="lightbox-stage" id="lightbox-stage">
+      {
+        projects.map((project, i) =>
+          project.screenshots?.map((shot, si) => (
+            <Image
+              src={shot}
+              alt={`${project.name}, captura ${si + 1}`}
+              width={1600}
+              class="lightbox-photo"
+              data-group={`project-${i}`}
+              data-name={project.name}
+            />
+          ))
+        )
+      }
+    </div>
   </div>
 </section>
 
 <script>
   const toggleBtn = document.getElementById("toggle-projects");
   const toggleLabel = toggleBtn?.querySelector<HTMLElement>(".toggle-label");
-  const extraCards = document.querySelectorAll<HTMLElement>(".project-card-extra");
+  const toggleText = toggleLabel?.textContent ?? "";
+  const extraProjects = document.querySelectorAll<HTMLElement>(".project-extra");
   let projectsExpanded = false;
 
   toggleBtn?.addEventListener("click", () => {
     projectsExpanded = !projectsExpanded;
-    extraCards.forEach((card) => card.classList.toggle("is-expanded", projectsExpanded));
+    extraProjects.forEach((project) => project.classList.toggle("is-expanded", projectsExpanded));
     toggleBtn.classList.toggle("is-expanded", projectsExpanded);
     toggleBtn.setAttribute("aria-expanded", String(projectsExpanded));
     if (toggleLabel) {
-      toggleLabel.textContent = projectsExpanded ? "Ver menos proyectos" : "Ver más proyectos";
+      toggleLabel.textContent = projectsExpanded ? "Ver menos proyectos" : toggleText;
     }
     if (!projectsExpanded) {
       toggleBtn.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   });
 
+  // Galería en cada proyecto: las miniaturas cambian la imagen principal
+  document.querySelectorAll<HTMLElement>("[data-gallery]").forEach((gallery) => {
+    const photos = gallery.querySelectorAll<HTMLElement>(".gallery-photo");
+    const thumbs = gallery.querySelectorAll<HTMLButtonElement>("[data-thumb]");
+    const current = gallery.querySelector<HTMLElement>("[data-current]");
+
+    thumbs.forEach((thumb) => {
+      thumb.addEventListener("click", () => {
+        const index = Number(thumb.dataset.thumb);
+        gallery.dataset.index = String(index);
+        photos.forEach((photo, pi) => photo.classList.toggle("is-active", pi === index));
+        thumbs.forEach((t, ti) => {
+          t.classList.toggle("is-active", ti === index);
+          t.setAttribute("aria-pressed", String(ti === index));
+        });
+        if (current) current.textContent = String(index + 1);
+      });
+    });
+  });
+
   const lightbox = document.getElementById("project-lightbox");
+  const stage = document.getElementById("lightbox-stage");
+  const caption = document.getElementById("lightbox-caption");
+  const counter = document.getElementById("lightbox-counter");
   const closeBtn = document.getElementById("project-lightbox-close");
   const prevBtn = document.getElementById("project-lightbox-prev");
   const nextBtn = document.getElementById("project-lightbox-next");
-  const triggers = document.querySelectorAll<HTMLButtonElement>("[data-project-lightbox]");
   const allPhotos = Array.from(document.querySelectorAll<HTMLImageElement>(".lightbox-photo"));
 
   let currentGroup: HTMLImageElement[] = [];
   let currentIndex = 0;
+  let lastTrigger: HTMLElement | null = null;
 
   function showPhoto(index: number) {
     if (currentGroup.length === 0) return;
     currentIndex = (index + currentGroup.length) % currentGroup.length;
     allPhotos.forEach((photo) => photo.classList.remove("is-active"));
     currentGroup[currentIndex].classList.add("is-active");
+    if (counter) counter.textContent = currentGroup.length > 1 ? `${currentIndex + 1} / ${currentGroup.length}` : "";
   }
 
-  function openLightbox(group: string) {
+  function openLightbox(group: string, index: number, trigger: HTMLElement) {
     currentGroup = allPhotos.filter((photo) => photo.dataset.group === group);
-    showPhoto(0);
+    if (caption) caption.textContent = currentGroup[0]?.dataset.name ?? "";
+    showPhoto(index);
+    lastTrigger = trigger;
     lightbox?.classList.add("is-open");
     lightbox?.classList.toggle("has-multiple", currentGroup.length > 1);
     lightbox?.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
+    closeBtn?.focus();
   }
 
   function closeLightbox() {
     lightbox?.classList.remove("is-open");
     lightbox?.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
+    lastTrigger?.focus();
   }
 
-  triggers.forEach((trigger) => {
+  document.querySelectorAll<HTMLButtonElement>("[data-open-lightbox]").forEach((trigger) => {
     trigger.addEventListener("click", () => {
-      const group = trigger.dataset.projectLightbox;
-      if (group) openLightbox(group);
+      const group = trigger.dataset.openLightbox;
+      const index = Number(trigger.closest<HTMLElement>("[data-gallery]")?.dataset.index ?? 0);
+      if (group) openLightbox(group, index, trigger);
     });
   });
 
@@ -175,7 +269,15 @@ const hasMore = projects.length > initialCount;
   nextBtn?.addEventListener("click", () => showPhoto(currentIndex + 1));
 
   lightbox?.addEventListener("click", (e) => {
-    if (e.target === lightbox) closeLightbox();
+    if (e.target === lightbox || e.target === stage) closeLightbox();
+  });
+
+  // Deslizar con el dedo en móvil
+  let touchStartX = 0;
+  stage?.addEventListener("touchstart", (e) => (touchStartX = e.touches[0].clientX), { passive: true });
+  stage?.addEventListener("touchend", (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) showPhoto(currentIndex + (dx < 0 ? 1 : -1));
   });
 
   document.addEventListener("keydown", (e) => {
@@ -204,156 +306,172 @@ const hasMore = projects.length > initialCount;
     margin-top: 0.6rem;
   }
 
-  .projects-grid {
+  .projects-list {
     margin-top: 3rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-    align-items: stretch;
-    gap: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
 
-  .project-card.project-card-extra {
+  /* Cada proyecto: galería a la izquierda, información a la derecha */
+  .project {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    padding: clamp(1.25rem, 2.5vw, 1.75rem);
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .project.project-extra {
     display: none;
   }
 
-  .project-card.project-card-extra.is-expanded {
-    display: flex;
+  .project.project-extra.is-expanded {
+    display: grid;
   }
 
-  .show-more-row {
-    display: flex;
-    justify-content: center;
-    margin-top: 2.5rem;
-  }
-
-  .show-more-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5em;
-    font-size: var(--fs-sm);
-    color: var(--accent);
-    background: var(--bg-elevated);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-sm);
-    padding: 0.75rem 1.5rem;
-    cursor: pointer;
-    transition: border-color 0.2s var(--ease-out), color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
-  }
-
-  .show-more-btn:hover {
-    border-color: var(--accent);
-    color: var(--ink);
-    transform: translateY(-2px);
-  }
-
-  .show-more-btn .arrow {
-    color: var(--accent);
-    display: inline-block;
-    transition: transform 0.25s var(--ease-out);
-  }
-
-  .show-more-btn.is-expanded .arrow {
-    transform: rotate(180deg);
-  }
-
-  .project-card {
-    position: relative;
-    background: linear-gradient(165deg, var(--bg-elevated) 0%, var(--bg-elevated) 60%, var(--bg-elevated-2) 160%);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 1.6rem;
+  .gallery {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    overflow: hidden;
-    transition: border-color 0.25s var(--ease-out), transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+    gap: 0.75rem;
+    min-width: 0;
   }
 
-  .project-card::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent-2));
-    opacity: 0;
-    transition: opacity 0.25s var(--ease-out);
-  }
-
-  .project-card:hover {
-    border-color: var(--accent-2);
-    transform: translateY(-4px);
-    box-shadow: 0 24px 48px -28px rgba(0, 0, 0, 0.65);
-  }
-
-  .project-card:hover::before {
-    opacity: 1;
-  }
-
-  .project-preview {
+  .gallery-main {
     position: relative;
     display: block;
-    width: calc(100% + 3.2rem);
+    width: 100%;
     padding: 0;
-    margin: -1.6rem -1.6rem 0.2rem;
-    overflow: hidden;
-    border: none;
-    border-bottom: 1px solid var(--line);
-    background: var(--bg-elevated-2);
     aspect-ratio: 16 / 10;
-    cursor: pointer;
+    overflow: hidden;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    cursor: zoom-in;
+    transition: border-color 0.2s var(--ease-out);
   }
 
-  .preview-photo {
+  .gallery-main:hover {
+    border-color: var(--accent-2);
+  }
+
+  .gallery-photo {
+    display: none;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: top;
-    transition: transform 0.3s var(--ease-out);
   }
 
-  .project-preview::after {
-    content: "";
+  .gallery-photo.is-active {
+    display: block;
+  }
+
+  .gallery-expand,
+  .gallery-count {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(10, 14, 23, 0.55), transparent 45%);
-    opacity: 0;
-    transition: opacity 0.25s var(--ease-out);
+    bottom: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.7rem;
+    font-size: var(--fs-2xs);
+    color: var(--ink);
+    background: rgba(10, 14, 23, 0.82);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
-  .project-preview:hover .preview-photo {
-    transform: scale(1.05);
+  .gallery-expand {
+    left: 0.75rem;
+    font-weight: 500;
+    transition: border-color 0.2s var(--ease-out), color 0.2s var(--ease-out);
   }
 
-  .project-preview:hover::after {
+  .gallery-expand svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .gallery-main:hover .gallery-expand {
+    color: var(--accent-2);
+    border-color: var(--accent-2);
+  }
+
+  .gallery-count {
+    right: 0.75rem;
+  }
+
+  .gallery-thumbs {
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  .gallery-thumb {
+    width: 88px;
+    aspect-ratio: 16 / 10;
+    padding: 0;
+    overflow: hidden;
+    background: var(--bg);
+    border: 2px solid var(--line);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+  }
+
+  .gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .gallery-thumb:hover {
     opacity: 1;
   }
 
-  .project-preview-restricted {
-    display: flex;
-    flex-direction: column;
+  .gallery-thumb.is-active {
+    opacity: 1;
+    border-color: var(--accent);
+  }
+
+  .gallery-restricted {
     align-items: center;
     justify-content: center;
     gap: 0.7rem;
+    aspect-ratio: 16 / 10;
     padding: 1.5rem;
     text-align: center;
-    cursor: default;
     background:
       repeating-linear-gradient(135deg, rgba(139, 150, 171, 0.05) 0 10px, transparent 10px 20px),
-      var(--bg-elevated-2);
-    border-bottom-style: dashed;
+      var(--bg);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-sm);
   }
 
   .restricted-icon {
     width: 28px;
     height: 28px;
-    color: var(--ink-faint);
+    color: var(--ink-muted);
   }
 
   .restricted-text {
-    max-width: 26ch;
-    font-size: var(--fs-2xs);
-    color: var(--ink-faint);
+    max-width: 28ch;
+    font-size: var(--fs-xs);
+    color: var(--ink-muted);
     line-height: 1.5;
+  }
+
+  .project-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
   }
 
   .project-top {
@@ -380,8 +498,6 @@ const hasMore = projects.length > initialCount;
     height: 6px;
     border-radius: 50%;
     background: currentColor;
-    box-shadow: 0 0 0 3px currentColor;
-    opacity: 0.9;
   }
 
   .status-badge[data-status="EN PROGRESO"] {
@@ -391,14 +507,35 @@ const hasMore = projects.length > initialCount;
   }
 
   .project-name {
-    font-size: var(--fs-lg);
-    letter-spacing: -0.01em;
+    font-size: var(--fs-xl);
+    letter-spacing: -0.015em;
   }
 
   .project-desc {
+    max-width: 60ch;
+    color: var(--ink);
+    font-size: var(--fs-base);
+    line-height: 1.6;
+  }
+
+  .project-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .block-label {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-xs);
+    color: var(--accent);
+  }
+
+  .project-role {
+    max-width: 60ch;
     color: var(--ink-muted);
     font-size: var(--fs-sm);
-    line-height: 1.6;
+    line-height: 1.55;
   }
 
   .project-stack {
@@ -408,45 +545,16 @@ const hasMore = projects.length > initialCount;
   }
 
   .project-stack li {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45em;
     font-size: var(--fs-2xs);
-    color: var(--ink-muted);
+    color: var(--ink);
     background: var(--bg-elevated-2);
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
-    padding: 0.3rem 0.6rem;
-    transition: border-color 0.2s var(--ease-out), color 0.2s var(--ease-out);
-  }
-
-  .project-stack li::before {
-    content: "";
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--accent-2);
-    flex-shrink: 0;
-  }
-
-  .project-card:hover .project-stack li {
-    border-color: var(--line);
-    color: var(--ink);
-  }
-
-  .project-role {
-    padding-top: 0.2rem;
-    font-size: var(--fs-2xs);
-    color: var(--ink-faint);
-    border-top: 1px solid var(--line);
-  }
-
-  .project-repo {
-    font-size: var(--fs-2xs);
-    color: var(--ink-faint);
+    padding: 0.3rem 0.65rem;
   }
 
   .project-links {
+    margin-top: auto;
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
@@ -455,45 +563,114 @@ const hasMore = projects.length > initialCount;
   .project-link {
     display: inline-flex;
     align-items: center;
-    gap: 0.4em;
-    font-size: var(--fs-2xs);
-    color: var(--accent-2);
+    gap: 0.5em;
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--ink);
     background: var(--bg-elevated-2);
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
-    padding: 0.45rem 0.75rem;
-    transition: border-color 0.2s var(--ease-out), color 0.2s var(--ease-out), background 0.2s var(--ease-out);
+    padding: 0.55rem 0.95rem;
+    transition: border-color 0.2s var(--ease-out), color 0.2s var(--ease-out);
   }
 
-  .project-link:hover {
+  .project-link svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  a.project-link:hover {
     border-color: var(--accent-2);
-    color: var(--ink);
-    background: rgba(94, 234, 212, 0.08);
+    color: var(--accent-2);
   }
 
-  .project-link .arrow {
+  .project-link.is-disabled {
+    color: var(--ink-muted);
+    background: transparent;
+    border-style: dashed;
+  }
+
+  .show-more-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+  }
+
+  .show-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: var(--fs-sm);
     color: var(--accent);
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s var(--ease-out), color 0.2s var(--ease-out);
   }
 
+  .show-more-btn:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+
+  .show-more-btn .arrow {
+    display: inline-block;
+    transition: transform 0.25s var(--ease-out);
+  }
+
+  .show-more-btn.is-expanded .arrow {
+    transform: rotate(180deg);
+  }
+
+  /* Visor de capturas a pantalla completa */
   .lightbox {
     position: fixed;
     inset: 0;
     z-index: 100;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: clamp(1.5rem, 5vw, 3rem);
-    background: rgba(10, 14, 23, 0.88);
+    flex-direction: column;
+    background: rgba(10, 14, 23, 0.94);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.25s var(--ease-out), visibility 0.25s var(--ease-out);
+    /* Al cerrar, visibility espera al fade; al abrir cambia al instante para poder enfocar el botón de cerrar */
+    transition: opacity 0.25s var(--ease-out), visibility 0s linear 0.25s;
   }
 
   .lightbox.is-open {
     opacity: 1;
     visibility: visible;
+    transition: opacity 0.25s var(--ease-out), visibility 0s;
+  }
+
+  .lightbox-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem clamp(1rem, 3vw, 2rem);
+  }
+
+  .lightbox-caption {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-base);
+  }
+
+  .lightbox-counter {
+    font-size: var(--fs-xs);
+    color: var(--ink-muted);
+  }
+
+  .lightbox-stage {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 clamp(3.5rem, 7vw, 6rem) clamp(1.5rem, 4vw, 3rem);
   }
 
   .lightbox-photo {
@@ -502,9 +679,9 @@ const hasMore = projects.length > initialCount;
     max-height: 100%;
     width: auto;
     height: auto;
+    object-fit: contain;
     border-radius: var(--radius);
     border: 1px solid var(--line);
-    box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.7);
   }
 
   .lightbox-photo.is-active {
@@ -512,10 +689,7 @@ const hasMore = projects.length > initialCount;
   }
 
   .lightbox-close {
-    position: absolute;
-    top: clamp(1rem, 3vw, 2rem);
-    right: clamp(1rem, 3vw, 2rem);
-    z-index: 2;
+    margin-left: auto;
     width: 42px;
     height: 42px;
     display: flex;
@@ -566,11 +740,11 @@ const hasMore = projects.length > initialCount;
   }
 
   .lightbox-prev {
-    left: clamp(0.5rem, 3vw, 2rem);
+    left: clamp(0.5rem, 2vw, 1.5rem);
   }
 
   .lightbox-next {
-    right: clamp(0.5rem, 3vw, 2rem);
+    right: clamp(0.5rem, 2vw, 1.5rem);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -579,26 +753,36 @@ const hasMore = projects.length > initialCount;
     }
   }
 
-  @media (max-width: 560px) {
-    .lightbox-nav {
-      width: 38px;
-      height: 38px;
-      font-size: 1.5rem;
+  @media (max-width: 900px) {
+    .project {
+      grid-template-columns: 1fr;
     }
   }
 
-  @media (max-width: 480px) {
-    .heading-row {
-      align-items: flex-start;
+  @media (max-width: 560px) {
+    .project-name {
+      font-size: var(--fs-lg);
     }
 
-    .project-card {
-      padding: 1.2rem;
+    .project-desc {
+      font-size: var(--fs-sm);
     }
 
-    .project-preview {
-      margin: -1.2rem -1.2rem 0.2rem;
-      width: calc(100% + 2.4rem);
+    .gallery-thumb {
+      width: 72px;
+    }
+
+    .lightbox-stage {
+      padding: 0 0.75rem 1.5rem;
+    }
+
+    .lightbox-nav {
+      top: auto;
+      bottom: 1.5rem;
+      transform: none;
+      width: 42px;
+      height: 42px;
+      font-size: 1.5rem;
     }
   }
 </style>

@@ -1,7 +1,11 @@
 ---
 import { Image } from "astro:assets";
 import miguel from "../assets/miguel.webp";
-import { personal } from "../data/profile";
+import { personal, languages } from "../data/profile";
+
+const english = languages.find((lang) => lang.name === "Inglés");
+// "Bello, Antioquia" en vez de la ubicación completa, para que la línea del rol quepa en una sola línea
+const city = personal.location.split(", ").slice(0, 2).join(", ");
 ---
 
 <section id="top" class="hero">
@@ -13,7 +17,17 @@ import { personal } from "../data/profile";
       </p>
 
       <h1 class="hero-name reveal">{personal.name}</h1>
-      <p class="hero-role mono reveal">{personal.role} · {personal.location}</p>
+      <p class="hero-role mono reveal">
+        {personal.role} ·{" "}
+        {english?.certificateUrl ? (
+          <a class="hero-english" href={english.certificateUrl} target="_blank" rel="noopener noreferrer" title="Ver certificado de inglés">
+            Inglés B2
+          </a>
+        ) : (
+          "Inglés B2"
+        )}{" "}
+        · {city}
+      </p>
 
       <p class="hero-summary reveal">{personal.summary}</p>
 
@@ -69,6 +83,18 @@ import { personal } from "../data/profile";
     margin-top: 0.85rem;
     color: var(--accent);
     font-size: var(--fs-sm);
+  }
+
+  .hero-english {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 0.25em;
+    transition: text-decoration-color 0.2s var(--ease-out);
+  }
+
+  .hero-english:hover {
+    text-decoration-color: var(--accent);
   }
 
   .hero-summary {

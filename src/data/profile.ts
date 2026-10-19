@@ -4,31 +4,35 @@
 import feriaCiencia2024 from "../assets/feria_2024.webp";
 import feriaCiencia2024Certificado from "../assets/feria_2024_2.webp";
 import feriaCiencia2025 from "../assets/feria_2025.webp";
-import comparativoPagosLogin from "../assets/comparativo_pagos/img1.webp";
-import comparativoPagosDashboard from "../assets/comparativo_pagos/img2.webp";
+import comparativoPagosLogin from "../assets/comparativo_pagos/login.webp";
+import comparativoPagosDashboard from "../assets/comparativo_pagos/dashboard.webp";
 import creditoFuturoLogin from "../assets/creditofuturo/img1.webp";
-import creditoFuturoDashboard from "../assets/creditofuturo/img2.webp";
+import creditoFuturoDashboard from "../assets/creditofuturo/dashboard.webp";
 import planesLogin from "../assets/planes/img1.webp";
 import planesDashboard from "../assets/planes/img2.webp";
 import studypassLogin from "../assets/studypass/img1.webp";
-import studypassDashboard from "../assets/studypass/img2.webp";
+import studypassDashboard from "../assets/studypass/dashboard.webp";
+import crmLogin from "../assets/crm/img1.webp";
+import crmDashboard from "../assets/crm/dashboard-privado.webp";
 import fraganciasTienda from "../assets/fragancias/img1.webp";
 import fraganciasProducto from "../assets/fragancias/img2.webp";
 import fraganciasDashboard from "../assets/fragancias/img3.webp";
 
 export const personal = {
   name: "Miguel Ángel Posada Marín",
-  role: "Backend Developer",
+  role: "Full Stack Developer",
   location: "Bello, Antioquia, Colombia",
   email: "magelposada@gmail.com",
   phone: "3235849258",
   phoneDisplay: "+57 323 584 9258",
   github: "https://github.com/LoskoMiguel",
   githubHandle: "github.com/LoskoMiguel",
+  website: "https://miguel-posada-dev.vercel.app",
+  websiteDisplay: "miguel-posada-dev.vercel.app",
   cvUrl: "/cv/cv_miguel_angel_posada.pdf",
   available: true,
   summary:
-    "Backend Developer especializado en el desarrollo de APIs, la automatización de procesos y sistemas empresariales con Python. Cuento con experiencia en el desarrollo de software para el sector inmobiliario.",
+    "Full Stack Developer con enfoque en backend: APIs, automatizaciones y sistemas empresariales con Python y React. Actualmente desarrollo y mantengo el CRM de Arrendamientos del Norte.",
 };
 
 export type StackItem = {
@@ -65,6 +69,15 @@ export const stack: StackCategory[] = [
     ],
   },
   {
+    label: "Frontend",
+    comment: "// frontend",
+    items: [
+      { name: "HTML", icon: "siHtml5" },
+      { name: "CSS", icon: "siCss" },
+      { name: "React", icon: "siReact" },
+    ],
+  },
+  {
     label: "Bases de datos",
     comment: "// bases de datos",
     items: [
@@ -83,14 +96,17 @@ export const stack: StackCategory[] = [
     ],
   },
   {
-    label: "DevOps",
-    comment: "// devops",
+    label: "DevOps y Cloud",
+    comment: "// devops y cloud",
     items: [
       { name: "Docker", icon: "siDocker" },
       { name: "Docker Compose", icon: "siDocker" },
       { name: "Git", icon: "siGit" },
       { name: "GitHub", icon: "siGithub" },
       { name: "Linux", icon: "siLinux" },
+      { name: "Vercel", icon: "siVercel" },
+      { name: "Render", icon: "siRender" },
+      { name: "Cloudinary", icon: "siCloudinary" },
     ],
   },
   {
@@ -108,6 +124,9 @@ export const stack: StackCategory[] = [
       { name: "LangChain", icon: "siLangchain" },
       { name: "LangGraph", icon: "siLanggraph" },
       { name: "Integración de APIs de IA", fallback: "AI" },
+      { name: "Claude Code", icon: "siClaude" },
+      { name: "MCP", icon: "siModelcontextprotocol" },
+      { name: "Agent Skills", fallback: "SK" },
     ],
   },
   {
@@ -137,10 +156,10 @@ export const experience: ExperienceEntry[] = [
     period: "jun. 2026 — actualidad",
     current: true,
     bullets: [
-      "Desarrollo y mantenimiento completo del CRM empresarial.",
-      "Implementación de nuevas funcionalidades de punta a punta.",
-      "Automatización de procesos internos.",
-      "Desarrollo y mantenimiento de APIs.",
+      "Desarrollo y mantenimiento del CRM empresarial.",
+      "Clientes mejor organizados y un seguimiento mucho más fácil para el equipo.",
+      "Nuevas funcionalidades de punta a punta con FastAPI, PostgreSQL y React.",
+      "Automatización de procesos internos y desarrollo de APIs.",
       "Punto de referencia para todo el desarrollo del CRM.",
     ],
   },
@@ -175,7 +194,7 @@ export const education: EducationEntry[] = [
   },
   {
     title: "Bachillerato",
-    institution: "Institución Educativa Jorge Eliécer Gaitán — Bello, Antioquia",
+    institution: "Institución Educativa Jorge Eliécer Gaitán Ayala — Bello, Antioquia",
     period: "2025",
   },
 ];
@@ -195,6 +214,8 @@ export type RecognitionEntry = {
   title: string;
   organizer: string;
   period: string;
+  /** Nombre del proyecto premiado, mostrado en la hoja de vida. */
+  project: string;
   description: string;
   photos?: (typeof feriaCiencia2024)[];
   links?: { label: string; url: string }[];
@@ -205,6 +226,7 @@ export const recognitions: RecognitionEntry[] = [
     title: "Segundo puesto — Feria de la Ciencia, la Innovación y la Creatividad",
     organizer: "Secretaría de Educación y Alcaldía de Bello",
     period: "2025",
+    project: "StudyPass",
     description:
       "Segundo puesto en la categoría Educación Media (10.º y 11.º) con el proyecto StudyPass, desarrollado en equipo de 3 personas: backend por mi parte, frontend por un compañero y seguridad del sistema por otro. Cobertura en Diario de Medellín.",
     photos: [feriaCiencia2025],
@@ -220,6 +242,7 @@ export const recognitions: RecognitionEntry[] = [
     title: "Primer puesto — Feria de la Ciencia, la Investigación y la Competitividad",
     organizer: "Secretaría de Educación y Alcaldía de Bello",
     period: "2024",
+    project: "OcularVoice",
     description:
       "Primer puesto en la categoría Básica Secundaria con el proyecto OcularVoice, desarrollado junto a un compañero (backend por mi parte, frontend por su parte). Cobertura en medios de comunicación locales.",
     photos: [feriaCiencia2024, feriaCiencia2024Certificado],
@@ -239,6 +262,8 @@ export type Project = {
   description: string;
   stack: string[];
   role: string;
+  /** Resumen de una línea para la hoja de vida. Solo los proyectos que lo tienen aparecen en /cv. */
+  summary?: string;
   screenshots?: (typeof comparativoPagosLogin)[];
   repoUrl?: string;
   demoUrl?: string;
@@ -250,11 +275,35 @@ export type Project = {
 // (capturas, repos, demos). Reemplazar `placeholder` y sumar enlaces reales.
 export const projects: Project[] = [
   {
+    name: "StudyPass",
+    status: "200 OK",
+    description:
+      "Sistema de gestión académica para la I.E. Jorge Eliécer Gaitán Ayala: control de asistencia por escaneo de código de barras, cálculo automático de faltas y llegadas tarde, reportes y estadísticas, y un chat con IA para consultar los datos. Segundo puesto en la Feria de la Ciencia 2025.",
+    stack: ["Flask", "Python", "PostgreSQL", "LangGraph", "OpenAI API"],
+    summary:
+      "Sistema de asistencia para la I.E. Jorge Eliécer Gaitán Ayala con escaneo de códigos de barras, reportes y chat con IA. Backend en equipo de 3 personas.",
+    role: "Desarrollo backend en equipo de 3 personas: scanner de códigos de barra, lógica de asistencia/faltas, reportes y chat con IA vía LangGraph",
+    screenshots: [studypassLogin, studypassDashboard],
+  },
+  {
+    name: "CRM Empresarial",
+    status: "200 OK",
+    description:
+      "Sistema CRM para gestión de arrendamientos: administración de clientes, contratos y procesos internos del negocio.",
+    stack: ["FastAPI", "React", "PostgreSQL"],
+    summary:
+      "CRM de Arrendamientos del Norte para gestionar clientes, propiedades, citas, seguimiento y captación de propietarios. Desarrollo full stack.",
+    role: "Desarrollo full stack: backend con FastAPI y PostgreSQL, frontend con React y nuevas funcionalidades de punta a punta",
+    screenshots: [crmLogin, crmDashboard],
+  },
+  {
     name: "Comparativo de Pagos",
     status: "200 OK",
     description:
       "Sistema de auditoría financiera que compara planes de pago en Excel entre Alianza Fiduciaria y SINCO, cuota por cuota, y genera un reporte comparativo elegante en Excel con las diferencias resaltadas.",
     stack: ["FastAPI", "Next.js", "React", "Tailwind CSS", "Python"],
+    summary:
+      "Auditoría financiera que compara planes de pago en Excel cuota por cuota entre dos sistemas y genera un reporte con las diferencias. Proyecto freelance full stack.",
     role: "Proyecto freelance — desarrollo full stack: backend (parsers, comparación, autenticación) con FastAPI y frontend con Next.js",
     screenshots: [comparativoPagosLogin, comparativoPagosDashboard],
     privateRepo: true,
@@ -268,16 +317,6 @@ export const projects: Project[] = [
     role: "Desarrollo full stack: backend con FastAPI/PostgreSQL (lógica de mora, autenticación JWT) y frontend en HTML/CSS/JS",
     screenshots: [creditoFuturoLogin, creditoFuturoDashboard],
     repoUrl: "https://github.com/LoskoMiguel/CreditoFuturo",
-  },
-  {
-    name: "StudyPass",
-    status: "200 OK",
-    description:
-      "Sistema de gestión académica para un colegio: control de asistencia por escaneo de código de barras, cálculo automático de faltas y llegadas tarde, reportes y estadísticas, y un chat con IA para consultar los datos. Segundo puesto en la Feria de la Ciencia 2025.",
-    stack: ["Flask", "Python", "PostgreSQL", "LangGraph", "OpenAI API"],
-    role: "Desarrollo backend en equipo de 3 personas: scanner de códigos de barra, lógica de asistencia/faltas, reportes y chat con IA vía LangGraph",
-    screenshots: [studypassLogin, studypassDashboard],
-    repoUrl: "https://github.com/LoskoMiguel/StudyPass-Jega",
   },
   {
     name: "VanderBilt — Fragancias",
@@ -298,15 +337,6 @@ export const projects: Project[] = [
     role: "Desarrollo backend: API REST con Express y PostgreSQL (Supabase), votos y comentarios en tiempo real con Socket.IO, y subida de fotos/video vía Cloudinary",
     screenshots: [planesLogin, planesDashboard],
     repoUrl: "https://github.com/LoskoMiguel/mafia-planes",
-  },
-  {
-    name: "CRM Empresarial",
-    status: "200 OK",
-    description:
-      "Sistema CRM para gestión de arrendamientos: administración de clientes, contratos y procesos internos del negocio.",
-    stack: ["FastAPI", "React", "PostgreSQL"],
-    role: "Desarrollo backend y de nuevas funcionalidades",
-    placeholder: true,
   },
   {
     name: "Sistema RPA de Automatización",
