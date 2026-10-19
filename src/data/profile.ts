@@ -231,7 +231,6 @@ export const recognitions: RecognitionEntry[] = [
       "Segundo puesto en la categoría Educación Media (10.º y 11.º) con el proyecto StudyPass, desarrollado en equipo de 3 personas: backend por mi parte, frontend por un compañero y seguridad del sistema por otro. Cobertura en Diario de Medellín.",
     photos: [feriaCiencia2025],
     links: [
-      { label: "Repositorio — StudyPass", url: "https://github.com/LoskoMiguel/StudyPass-Jega" },
       {
         label: "Artículo — Diario de Medellín",
         url: "https://diariodemedellin.com/bello-celebro-la-creatividad-y-la-innovacion-con-la-feria-de-la-ciencia-2025/",
