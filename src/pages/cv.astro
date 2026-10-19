@@ -6,12 +6,22 @@ import "@fontsource/ibm-plex-sans/400.css";
 import "@fontsource/ibm-plex-sans/500.css";
 import "@fontsource/ibm-plex-sans/600.css";
 import { Image } from "astro:assets";
+import { siGithub } from "simple-icons";
 // Recorte cuadrado de miguel.webp (cabeza y hombros) con fondo claro para impresión
 import photo from "../assets/miguel-cv.webp";
 import { personal, experience, projects, recognitions, stack, education, languages } from "../data/profile";
 
 const cvProjects = projects.filter((project) => project.summary);
 const phoneHref = `tel:+57${personal.phone}`;
+
+// Íconos de línea (24×24) para la cabecera de contacto
+const icons = {
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  phone:
+    '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+  pin: '<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11"/><circle cx="12" cy="10" r="2.5"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+};
 ---
 
 <!doctype html>
@@ -33,11 +43,26 @@ const phoneHref = `tel:+57${personal.phone}`;
             <span class="role-english">Inglés B2 certificado</span>
           </p>
           <ul class="contact">
-            <li><a href={`mailto:${personal.email}`}>{personal.email}</a></li>
-            <li><a href={phoneHref}>{personal.phoneDisplay}</a></li>
-            <li>{personal.location}</li>
-            <li><a href={personal.github}>{personal.githubHandle}</a></li>
-            <li><a href={personal.website}>{personal.websiteDisplay}</a></li>
+            <li>
+              <svg viewBox="0 0 24 24" class="icon" aria-hidden="true" set:html={icons.mail} />
+              <a href={`mailto:${personal.email}`}>{personal.email}</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" class="icon" aria-hidden="true" set:html={icons.phone} />
+              <a href={phoneHref}>{personal.phoneDisplay}</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" class="icon" aria-hidden="true" set:html={icons.pin} />
+              {personal.location}
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" class="icon icon-brand" aria-hidden="true" set:html={`<path d="${siGithub.path}"/>`} />
+              <a href={personal.github}>{personal.githubHandle}</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" class="icon" aria-hidden="true" set:html={icons.globe} />
+              <a href={personal.website}>{personal.websiteDisplay}</a>
+            </li>
           </ul>
         </div>
       </header>
@@ -283,6 +308,28 @@ const phoneHref = `tel:+57${personal.phone}`;
     font-size: 8.8pt;
     line-height: 1.45;
     color: var(--cv-muted);
+  }
+
+  .contact li {
+    display: flex;
+    align-items: center;
+    gap: 4pt;
+  }
+
+  .icon {
+    flex-shrink: 0;
+    width: 9.5pt;
+    height: 9.5pt;
+    fill: none;
+    stroke: var(--cv-accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .icon-brand {
+    fill: var(--cv-accent);
+    stroke: none;
   }
 
   .summary {
