@@ -1,4 +1,4 @@
-// Genera public/cv/cv_miguel_angel_posada.pdf a partir de la página /cv.
+// Genera los PDF de la hoja de vida en public/cv/ a partir de /es/cv (español) y /cv (inglés).
 // Requiere un build previo (dist/), Google Chrome y Node 22+ (WebSocket global). Uso: `npm run cv`.
 import { spawn } from "node:child_process";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
@@ -7,8 +7,11 @@ import { join, resolve } from "node:path";
 
 const port = 4329;
 const debugPort = 9339;
-const url = `http://127.0.0.1:${port}/cv`;
-const output = resolve("public/cv/cv_miguel_angel_posada.pdf");
+const base = `http://127.0.0.1:${port}`;
+const pages = [
+  { path: "/es/cv", output: resolve("public/cv/cv_miguel_angel_posada.pdf") },
+  { path: "/cv", output: resolve("public/cv/cv_miguel_angel_posada_en.pdf") },
+];
 const chromeBin = process.env.CHROME_PATH ?? "google-chrome";
 const profileDir = mkdtempSync(join(tmpdir(), "cv-chrome-"));
 
@@ -33,7 +36,7 @@ const chrome = spawn(
 );
 
 try {
-  await waitFor(async () => (await fetch(url)).ok, url);
+  await waitFor(async () => (await fetch(`${base}/cv`)).ok, base);
   const target = await waitFor(async () => {
     const targets = await (await fetch(`http://127.0.0.1:${debugPort}/json`)).json();
     return targets.find((t) => t.type === "page");
@@ -57,23 +60,25 @@ try {
     });
 
   await send("Page.enable");
-  const loaded = new Promise((r) => {
-    const original = ws.onmessage;
-    ws.onmessage = (msg) => {
-      if (JSON.parse(msg.data).method === "Page.loadEventFired") r();
-      original(msg);
-    };
-  });
-  await send("Page.navigate", { url });
-  await loaded;
-  // Imprimir solo cuando las fuentes ya estén listas
-  await send("Runtime.evaluate", { expression: "document.fonts.ready.then(() => true)", awaitPromise: true });
+  const onMessage = ws.onmessage;
+  for (const { path, output } of pages) {
+    const loaded = new Promise((r) => {
+      ws.onmessage = (msg) => {
+        if (JSON.parse(msg.data).method === "Page.loadEventFired") r();
+        onMessage(msg);
+      };
+    });
+    await send("Page.navigate", { url: `${base}${path}` });
+    await loaded;
+    // Imprimir solo cuando las fuentes ya estén listas
+    await send("Runtime.evaluate", { expression: "document.fonts.ready.then(() => true)", awaitPromise: true });
 
-  const { data } = await send("Page.printToPDF", { preferCSSPageSize: true, printBackground: true });
-  writeFileSync(output, Buffer.from(data, "base64"));
+    const { data } = await send("Page.printToPDF", { preferCSSPageSize: true, printBackground: true });
+    writeFileSync(output, Buffer.from(data, "base64"));
+    console.log(`CV generado: ${output}`);
+  }
   await send("Browser.close").catch(() => {});
   ws.close();
-  console.log(`CV generado: ${output}`);
 } finally {
   server.kill();
   // Esperar a que Chrome cierre antes de borrar su perfil temporal

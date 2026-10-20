@@ -27,8 +27,8 @@ export const personal = {
   phoneDisplay: "+57 323 584 9258",
   github: "https://github.com/LoskoMiguel",
   githubHandle: "github.com/LoskoMiguel",
-  website: "https://miguel-posada-dev.vercel.app",
-  websiteDisplay: "miguel-posada-dev.vercel.app",
+  website: "https://miguel-posada-dev.vercel.app/es/",
+  websiteDisplay: "miguel-posada-dev.vercel.app/es",
   cvUrl: "/cv/cv_miguel_angel_posada.pdf",
   available: true,
   summary:
@@ -257,7 +257,7 @@ export const recognitions: RecognitionEntry[] = [
 
 export type Project = {
   name: string;
-  status: "200 OK" | "EN PROGRESO";
+  status: "200 OK" | "EN PROGRESO" | "IN PROGRESS";
   description: string;
   stack: string[];
   role: string;

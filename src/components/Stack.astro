@@ -1,6 +1,11 @@
 ---
 import * as simpleIcons from "simple-icons";
-import { stack, type StackItem } from "../data/profile";
+import { type StackItem } from "../data/profile";
+import { getLang, getProfile, useTranslations } from "../i18n/ui";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const { stack } = getProfile(lang);
 
 // Marcas con hex casi negro se leerían invisibles sobre el fondo oscuro:
 // se fuerza su glifo a --ink en vez del color de marca real.
@@ -22,7 +27,7 @@ function resolveIcon(item: StackItem) {
 <section id="stack" class="stack-section">
   <div class="wrap">
     <p class="eyebrow reveal">// stack</p>
-    <h2 class="section-heading reveal">Herramientas que uso a diario</h2>
+    <h2 class="section-heading reveal">{t("stack.heading")}</h2>
 
     <div class="stack-groups">
       {

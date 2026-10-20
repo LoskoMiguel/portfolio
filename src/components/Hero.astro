@@ -1,9 +1,13 @@
 ---
 import { Image } from "astro:assets";
 import miguel from "../assets/miguel.webp";
-import { personal, languages } from "../data/profile";
+import { getLang, getProfile, useTranslations } from "../i18n/ui";
 
-const english = languages.find((lang) => lang.name === "Inglés");
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const { personal, languages } = getProfile(lang);
+
+const english = languages.find((item) => item.certificateUrl);
 // "Bello, Antioquia" en vez de la ubicación completa, para que la línea del rol quepa en una sola línea
 const city = personal.location.split(", ").slice(0, 2).join(", ");
 ---
@@ -13,18 +17,18 @@ const city = personal.location.split(", ").slice(0, 2).join(", ");
     <div class="hero-copy">
       <p class="eyebrow reveal">
         <span class="dot" aria-hidden="true"></span>
-        {personal.available ? "disponible para nuevos proyectos" : "ocupado actualmente"}
+        {personal.available ? t("status.availableProjects") : t("status.busy")}
       </p>
 
       <h1 class="hero-name reveal">{personal.name}</h1>
       <p class="hero-role mono reveal">
         {personal.role} ·{" "}
         {english?.certificateUrl ? (
-          <a class="hero-english" href={english.certificateUrl} target="_blank" rel="noopener noreferrer" title="Ver certificado de inglés">
-            Inglés B2
+          <a class="hero-english" href={english.certificateUrl} target="_blank" rel="noopener noreferrer" title={t("hero.englishCert")}>
+            {t("hero.english")}
           </a>
         ) : (
-          "Inglés B2"
+          t("hero.english")
         )}{" "}
         · {city}
       </p>
@@ -32,8 +36,8 @@ const city = personal.location.split(", ").slice(0, 2).join(", ");
       <p class="hero-summary reveal">{personal.summary}</p>
 
       <div class="hero-cta reveal">
-        <a class="btn btn-primary" href="#proyectos">Ver proyectos</a>
-        <a class="btn btn-ghost" href="#contacto">Contactar</a>
+        <a class="btn btn-primary" href="#proyectos">{t("hero.projects")}</a>
+        <a class="btn btn-ghost" href="#contacto">{t("hero.contact")}</a>
       </div>
     </div>
 

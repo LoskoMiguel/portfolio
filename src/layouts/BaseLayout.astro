@@ -1,11 +1,14 @@
 ---
 import "../styles/global.css";
-import { personal } from "../data/profile";
+import { getLang, getProfile, homePath, langs } from "../i18n/ui";
 
 interface Props {
   title?: string;
   description?: string;
 }
+
+const lang = getLang(Astro.currentLocale);
+const { personal } = getProfile(lang);
 
 const {
   title = `${personal.name} — ${personal.role}`,
@@ -14,7 +17,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -25,7 +28,11 @@ const {
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0a0e17" />
 
+    {langs.map((l) => <link rel="alternate" hreflang={l} href={new URL(homePath[l], personal.website)} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(homePath.en, personal.website)} />
+
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content={lang === "en" ? "en_US" : "es_CO"} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
   </head>

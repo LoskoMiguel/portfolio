@@ -9,7 +9,11 @@ import { Image } from "astro:assets";
 import { siGithub } from "simple-icons";
 // Recorte cuadrado de miguel.webp (cabeza y hombros) con fondo claro para impresión
 import photo from "../assets/miguel-cv.webp";
-import { personal, experience, projects, recognitions, stack, education, languages } from "../data/profile";
+import { getLang, getProfile, useTranslations } from "../i18n/ui";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const { personal, experience, projects, recognitions, stack, education, languages } = getProfile(lang);
 
 const cvProjects = projects.filter((project) => project.summary);
 const phoneHref = `tel:+57${personal.phone}`;
@@ -25,12 +29,12 @@ const icons = {
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
-    <title>{personal.name} — Hoja de vida</title>
+    <title>{personal.name} — {t("meta.cvTitle")}</title>
   </head>
   <body>
     <main class="page">
@@ -40,7 +44,7 @@ const icons = {
           <h1 class="name">{personal.name}</h1>
           <p class="role">
             {personal.role}
-            <span class="role-english">Inglés B2 certificado</span>
+            <span class="role-english">{t("cv.english")}</span>
           </p>
           <ul class="contact">
             <li>
@@ -72,7 +76,7 @@ const icons = {
       <div class="columns">
         <div class="main">
           <section>
-            <h2>Experiencia</h2>
+            <h2>{t("cv.experience")}</h2>
             {
               experience.map((job) => (
                 <article class="entry">
@@ -92,7 +96,7 @@ const icons = {
           </section>
 
           <section>
-            <h2>Proyectos</h2>
+            <h2>{t("cv.projects")}</h2>
             {
               cvProjects.map((project) => (
                 <article class="entry">
@@ -112,7 +116,7 @@ const icons = {
           </section>
 
           <section>
-            <h2>Reconocimientos</h2>
+            <h2>{t("cv.recognitions")}</h2>
             {
               recognitions.map((item) => (
                 <article class="entry entry-tight">
@@ -121,7 +125,7 @@ const icons = {
                     <p class="period">{item.period}</p>
                   </div>
                   <p class="org">
-                    Proyecto {item.project}. {item.organizer}
+                    {t("cv.project")} {item.project}. {item.organizer}
                   </p>
                 </article>
               ))
@@ -131,7 +135,7 @@ const icons = {
 
         <aside class="side">
           <section>
-            <h2>Tecnologías</h2>
+            <h2>{t("cv.tech")}</h2>
             <dl class="skills">
               {
                 stack.map((group) => (
@@ -145,7 +149,7 @@ const icons = {
           </section>
 
           <section>
-            <h2>Formación</h2>
+            <h2>{t("cv.education")}</h2>
             {
               education.map((item) => (
                 <article class="entry entry-tight">
@@ -158,7 +162,7 @@ const icons = {
           </section>
 
           <section>
-            <h2>Idiomas</h2>
+            <h2>{t("cv.languages")}</h2>
             <ul class="langs">
               {
                 languages.map((lang) => (

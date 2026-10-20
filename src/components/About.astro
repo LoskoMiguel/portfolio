@@ -1,5 +1,9 @@
 ---
-import { personal, stack } from "../data/profile";
+import { getLang, getProfile, useTranslations } from "../i18n/ui";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const { personal, stack } = getProfile(lang);
 
 const featuredStack = stack
   .flatMap((group) => group.items)
@@ -11,29 +15,18 @@ const featuredStack = stack
 <section id="sobre-mi" class="about-section">
   <div class="wrap about-grid">
     <div class="about-copy reveal">
-      <p class="eyebrow">// sobre-mi</p>
+      <p class="eyebrow">{t("about.eyebrow")}</p>
 
       <div class="docstring mono">
         <p class="cm-open">/**</p>
-        <p class="cm-line">
-          ¡Hola! Soy Miguel, desarrollador de software. Me apasiona crear aplicaciones modernas
-          y resolver problemas mediante el código.
-        </p>
-        <p class="cm-line">
-          Me gusta aprender constantemente y siempre estoy explorando nuevas tecnologías,
-          herramientas y buenas prácticas para seguir creciendo como desarrollador. Disfruto
-          enfrentar nuevos retos y convertir ideas en soluciones funcionales, buscando escribir
-          código limpio, escalable y fácil de mantener.
-        </p>
-        <p class="cm-line">
-          Actualmente continúo fortaleciendo mis conocimientos en arquitectura de software,
-          desarrollo backend y cloud, con el objetivo de construir soluciones de alta calidad.
-        </p>
+        <p class="cm-line">{t("about.p1")}</p>
+        <p class="cm-line">{t("about.p2")}</p>
+        <p class="cm-line">{t("about.p3")}</p>
         <p class="cm-open">*/</p>
       </div>
     </div>
 
-    <div class="window terminal reveal" style="transition-delay:120ms" role="img" aria-label={`Tarjeta de perfil de ${personal.name} en formato de respuesta de API`}>
+    <div class="window terminal reveal" style="transition-delay:120ms" role="img" aria-label={t("about.cardLabel", { name: personal.name })}>
       <div class="window-chrome">
         <span class="chrome-dot"></span>
         <span class="chrome-dot"></span>
@@ -51,7 +44,7 @@ const featuredStack = stack
           <p class="json-line" style="--i:0"><span class="key">"login"</span>: <span class="str">"LoskoMiguel"</span>,</p>
           <p class="json-line" style="--i:1"><span class="key">"role"</span>: <span class="str">"{personal.role}"</span>,</p>
           <p class="json-line" style="--i:2"><span class="key">"location"</span>: <span class="str">"Bello, Antioquia, CO"</span>,</p>
-          <p class="json-line" style="--i:3"><span class="key">"status"</span>: <span class="str accent">"disponible"</span>,</p>
+          <p class="json-line" style="--i:3"><span class="key">"status"</span>: <span class="str accent">"{t("about.statusValue")}"</span>,</p>
           <p class="json-line" style="--i:4">
             <span class="key">"stack"</span>: [{featuredStack.map((item, i) => (
               <>

@@ -1,12 +1,16 @@
 ---
-import { personal } from "../data/profile";
+import { getLang, getProfile, useTranslations } from "../i18n/ui";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const { personal } = getProfile(lang);
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
   <div class="wrap footer-row">
     <p class="mono">© {year} {personal.name}</p>
-    <a class="mono back-top" href="#top">↑ volver arriba</a>
+    <a class="mono back-top" href="#top">{t("footer.top")}</a>
   </div>
 </footer>
 

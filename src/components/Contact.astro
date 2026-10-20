@@ -1,6 +1,10 @@
 ---
 import { siGithub } from "simple-icons";
-import { personal } from "../data/profile";
+import { getLang, getProfile, useTranslations } from "../i18n/ui";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const { personal } = getProfile(lang);
 
 const channels = [
   {
@@ -10,7 +14,7 @@ const channels = [
     icon: "mail" as const,
   },
   {
-    label: "telefono",
+    label: t("contact.phone"),
     value: personal.phoneDisplay,
     href: `tel:+57${personal.phone}`,
     icon: "phone" as const,
@@ -27,21 +31,19 @@ const channels = [
 <section id="contacto" class="contact-section">
   <div class="wrap contact-grid">
     <div class="contact-copy reveal">
-      <p class="eyebrow">// contacto</p>
-      <h2 class="section-heading">Trabajemos juntos</h2>
-      <p class="contact-lead">
-        Escríbeme si tienes un proyecto en mente.
-      </p>
+      <p class="eyebrow">{t("contact.eyebrow")}</p>
+      <h2 class="section-heading">{t("contact.heading")}</h2>
+      <p class="contact-lead">{t("contact.lead")}</p>
 
       <p class="contact-status mono">
         <span class="dot" aria-hidden="true"></span>
-        {personal.available ? "disponible para nuevos proyectos" : "actualmente ocupado"}
+        {personal.available ? t("status.availableProjects") : t("contact.busy")}
       </p>
     </div>
 
     <div class="contact-card reveal" style="transition-delay:120ms">
       <p class="request-line mono">
-        <span class="method">POST</span> /contacto <span class="dim">HTTP/1.1</span>
+        <span class="method">POST</span> {t("contact.path")} <span class="dim">HTTP/1.1</span>
       </p>
       <ul class="channels">
         {

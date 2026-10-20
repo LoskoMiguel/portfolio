@@ -1,11 +1,15 @@
 ---
-import { experience } from "../data/profile";
+import { getLang, getProfile, useTranslations } from "../i18n/ui";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const { experience } = getProfile(lang);
 ---
 
 <section id="experiencia" class="exp-section">
   <div class="wrap">
-    <p class="eyebrow reveal">// log --experiencia</p>
-    <h2 class="section-heading reveal">Experiencia</h2>
+    <p class="eyebrow reveal">{t("exp.eyebrow")}</p>
+    <h2 class="section-heading reveal">{t("exp.heading")}</h2>
 
     <ol class="timeline">
       {
@@ -19,7 +23,7 @@ import { experience } from "../data/profile";
             <div class="entry-card" class:list={{ current: job.current }}>
               <div class="entry-title-row">
                 <h3 class="entry-role">{job.role}</h3>
-                {job.current && <span class="current-pill mono">actual</span>}
+                {job.current && <span class="current-pill mono">{t("exp.current")}</span>}
               </div>
               <p class="entry-meta mono">{job.company} · {job.period}</p>
 

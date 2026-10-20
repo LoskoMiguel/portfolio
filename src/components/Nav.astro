@@ -1,14 +1,19 @@
 ---
-import { nav, personal } from "../data/profile";
+import { getLang, getProfile, homePath, langs, useTranslations } from "../i18n/ui";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const { nav, personal } = getProfile(lang);
+const otherLang = langs.find((l) => l !== lang) ?? "es";
 ---
 
 <header class="nav-root">
   <div class="wrap nav-bar">
-    <a href="#top" class="logo mono" aria-label="Ir al inicio">
+    <a href="#top" class="logo mono" aria-label={t("nav.home")}>
       <span class="logo-prompt">~</span>/miguel<span class="logo-caret">_</span>
     </a>
 
-    <nav class="links mono" aria-label="Secciones del sitio">
+    <nav class="links mono" aria-label={t("nav.sections")}>
       {
         nav.map((item) => (
           <a href={item.href}>
@@ -21,19 +26,31 @@ import { nav, personal } from "../data/profile";
 
     <div class="status mono" aria-hidden="true">
       <span class="dot" class:list={{ off: !personal.available }}></span>
-      {personal.available ? "disponible" : "no disponible"}
+      {personal.available ? t("status.available") : t("status.unavailable")}
     </div>
 
-    <a class="cv-btn mono" href={personal.cvUrl} download>
-      <span class="arrow">↓</span> Descargar CV
+    <a
+      class="lang-switch mono"
+      href={homePath[otherLang]}
+      hreflang={otherLang}
+      aria-label={t("lang.switchLabel")}
+      data-lang-switch
+    >
+      {langs.map((l) => (
+        <span class:list={["lang-opt", { "is-current": l === lang }]} aria-hidden="true">{l.toUpperCase()}</span>
+      ))}
     </a>
 
-    <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menú">
+    <a class="cv-btn mono" href={personal.cvUrl} download>
+      <span class="arrow">↓</span> {t("nav.downloadCv")}
+    </a>
+
+    <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label={t("nav.openMenu")}>
       <span></span><span></span><span></span>
     </button>
   </div>
 
-  <nav id="mobile-menu" class="mobile-menu mono" aria-label="Menú móvil">
+  <nav id="mobile-menu" class="mobile-menu mono" aria-label={t("nav.mobile")}>
     {
       nav.map((item) => (
         <a href={item.href}>
@@ -43,18 +60,19 @@ import { nav, personal } from "../data/profile";
       ))
     }
     <a class="mobile-cv-btn" href={personal.cvUrl} download>
-      <span class="arrow">↓</span> Descargar CV
+      <span class="arrow">↓</span> {t("nav.downloadCv")}
     </a>
     <div class="mobile-status">
       <span class="dot" class:list={{ off: !personal.available }}></span>
-      {personal.available ? "disponible para trabajar" : "no disponible"}
+      {personal.available ? t("status.availableWork") : t("status.unavailable")}
     </div>
   </nav>
-
-  <a class="fab-cv-btn mono" href={personal.cvUrl} download aria-label="Descargar CV">
-    <span class="arrow">↓</span> Descargar CV
-  </a>
 </header>
+
+<!-- Fuera del header: su backdrop-filter haría que `position: fixed` se anclara al header y no a la pantalla -->
+<a class="fab-cv-btn mono" href={personal.cvUrl} download aria-label={t("nav.downloadCv")}>
+  <span class="arrow">↓</span> {t("nav.downloadCv")}
+</a>
 
 <script>
   const btn = document.getElementById("menu-btn");
@@ -64,6 +82,13 @@ import { nav, personal } from "../data/profile";
     const isOpen = menu?.classList.toggle("is-open");
     btn.setAttribute("aria-expanded", String(Boolean(isOpen)));
   });
+
+  // Al cambiar de idioma se conserva la sección en la que estaba el usuario
+  document.querySelectorAll<HTMLAnchorElement>("[data-lang-switch]").forEach((link) =>
+    link.addEventListener("click", () => {
+      if (location.hash) link.hash = location.hash;
+    })
+  );
 
   menu?.querySelectorAll("a").forEach((a) =>
     a.addEventListener("click", () => {
@@ -157,6 +182,37 @@ import { nav, personal } from "../data/profile";
     box-shadow: none;
   }
 
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-2xs);
+    font-weight: 500;
+    transition: border-color 0.2s var(--ease-out);
+  }
+
+  .lang-switch:hover {
+    border-color: var(--accent);
+  }
+
+  .lang-opt {
+    padding: 0.3rem 0.5rem;
+    border-radius: calc(var(--radius-sm) - 2px);
+    color: var(--ink-muted);
+    transition: color 0.2s var(--ease-out);
+  }
+
+  .lang-switch:hover .lang-opt:not(.is-current) {
+    color: var(--ink);
+  }
+
+  .lang-opt.is-current {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
   .cv-btn,
   .mobile-cv-btn,
   .fab-cv-btn {
@@ -227,6 +283,17 @@ import { nav, personal } from "../data/profile";
     display: none;
   }
 
+  /* Con el selector de idioma ya no cabe todo: el estado se repite en el hero */
+  @media (max-width: 1440px) {
+    .status {
+      display: none;
+    }
+
+    .links {
+      gap: 1.1rem;
+    }
+  }
+
   @media (max-width: 1200px) {
     .links,
     .status,
@@ -236,6 +303,10 @@ import { nav, personal } from "../data/profile";
 
     .menu-btn {
       display: flex;
+    }
+
+    .lang-switch {
+      margin-left: auto;
     }
 
     .mobile-menu {
@@ -249,7 +320,8 @@ import { nav, personal } from "../data/profile";
     }
 
     .mobile-menu.is-open {
-      max-height: 400px;
+      max-height: calc(100dvh - 64px);
+      overflow-y: auto;
       border-top-color: var(--line);
     }
 

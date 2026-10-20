@@ -1,15 +1,19 @@
 ---
-import { education, languages } from "../data/profile";
+import { getLang, getProfile, useTranslations } from "../i18n/ui";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const { education, languages } = getProfile(lang);
 ---
 
 <section id="educacion" class="edu-section">
   <div class="wrap">
-    <p class="eyebrow reveal">// educacion</p>
-    <h2 class="section-heading reveal">Educación e idiomas</h2>
+    <p class="eyebrow reveal">{t("edu.eyebrow")}</p>
+    <h2 class="section-heading reveal">{t("edu.heading")}</h2>
 
     <div class="edu-columns">
       <div class="edu-col">
-        <p class="col-label mono reveal">formación</p>
+        <p class="col-label mono reveal">{t("edu.training")}</p>
         <div class="card-list">
           {
             education.map((item, i) => (
@@ -38,7 +42,7 @@ import { education, languages } from "../data/profile";
       </div>
 
       <div class="edu-col">
-        <p class="col-label mono reveal">idiomas</p>
+        <p class="col-label mono reveal">{t("edu.languages")}</p>
         <div class="card-list">
           {
             languages.map((lang, i) => (

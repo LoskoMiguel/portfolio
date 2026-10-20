@@ -1,6 +1,10 @@
 ---
 import { Image } from "astro:assets";
-import { projects } from "../data/profile";
+import { getLang, getProfile, useTranslations } from "../i18n/ui";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const { projects } = getProfile(lang);
 
 const initialCount = 4;
 const hasMore = projects.length > initialCount;
@@ -10,8 +14,8 @@ const hasMore = projects.length > initialCount;
   <div class="wrap">
     <div class="heading-row reveal">
       <div>
-        <p class="eyebrow">// proyectos</p>
-        <h2 class="section-heading">Proyectos</h2>
+        <p class="eyebrow">{t("projects.eyebrow")}</p>
+        <h2 class="section-heading">{t("projects.heading")}</h2>
       </div>
     </div>
 
@@ -28,12 +32,12 @@ const hasMore = projects.length > initialCount;
                     type="button"
                     class="gallery-main"
                     data-open-lightbox={group}
-                    aria-label={`Ampliar capturas de ${project.name}`}
+                    aria-label={t("projects.enlargeLabel", { name: project.name })}
                   >
                     {shots.map((shot, si) => (
                       <Image
                         src={shot}
-                        alt={`${project.name}, captura ${si + 1} de ${shots.length}`}
+                        alt={t("projects.shotAlt", { name: project.name, n: si + 1, total: shots.length })}
                         width={960}
                         class:list={["gallery-photo", { "is-active": si === 0 }]}
                         data-index={si}
@@ -43,7 +47,7 @@ const hasMore = projects.length > initialCount;
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
                       </svg>
-                      Ampliar
+                      {t("projects.enlarge")}
                     </span>
                     {shots.length > 1 && (
                       <span class="gallery-count mono">
@@ -53,13 +57,13 @@ const hasMore = projects.length > initialCount;
                   </button>
 
                   {shots.length > 1 && (
-                    <div class="gallery-thumbs" role="group" aria-label={`Capturas de ${project.name}`}>
+                    <div class="gallery-thumbs" role="group" aria-label={t("projects.shotsLabel", { name: project.name })}>
                       {shots.map((shot, si) => (
                         <button
                           type="button"
                           class:list={["gallery-thumb", { "is-active": si === 0 }]}
                           data-thumb={si}
-                          aria-label={`Ver captura ${si + 1}`}
+                          aria-label={t("projects.viewShot", { n: si + 1 })}
                           aria-pressed={si === 0 ? "true" : "false"}
                         >
                           <Image src={shot} alt="" width={200} />
@@ -76,7 +80,7 @@ const hasMore = projects.length > initialCount;
                     <rect x="5" y="11" width="14" height="9" rx="1.5" />
                     <path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
                   </svg>
-                  <p class="restricted-text">Sistema interno: sin capturas por motivos de seguridad</p>
+                  <p class="restricted-text">{t("projects.restricted")}</p>
                 </div>
               )}
 
@@ -92,12 +96,12 @@ const hasMore = projects.length > initialCount;
                 <p class="project-desc">{project.description}</p>
 
                 <div class="project-block">
-                  <p class="block-label">Mi rol</p>
+                  <p class="block-label">{t("projects.role")}</p>
                   <p class="project-role">{project.role}</p>
                 </div>
 
                 <div class="project-block">
-                  <p class="block-label">Tecnologías</p>
+                  <p class="block-label">{t("projects.tech")}</p>
                   <ul class="project-stack mono">
                     {project.stack.map((s) => (
                       <li>{s}</li>
@@ -112,12 +116,12 @@ const hasMore = projects.length > initialCount;
                         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                           <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8 0 3.2.9.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1 .9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0 0 12 .3" />
                         </svg>
-                        Ver repositorio
+                        {t("projects.repo")}
                       </a>
                     )}
                     {project.demoUrl && (
                       <a class="project-link" href={project.demoUrl} target="_blank" rel="noopener noreferrer">
-                        Ver demo
+                        {t("projects.demo")}
                       </a>
                     )}
                     {project.privateRepo && (
@@ -126,7 +130,7 @@ const hasMore = projects.length > initialCount;
                           <rect x="5" y="11" width="14" height="9" rx="1.5" />
                           <path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
                         </svg>
-                        Repositorio privado
+                        {t("projects.private")}
                       </span>
                     )}
                   </div>
@@ -141,8 +145,8 @@ const hasMore = projects.length > initialCount;
     {
       hasMore && (
         <div class="show-more-row reveal">
-          <button type="button" class="show-more-btn mono" id="toggle-projects" aria-expanded="false">
-            <span class="toggle-label">Ver {projects.length - initialCount} proyectos más</span> <span class="arrow">↓</span>
+          <button type="button" class="show-more-btn mono" id="toggle-projects" aria-expanded="false" data-less-label={t("projects.showLess")}>
+            <span class="toggle-label">{t("projects.showMore", { n: projects.length - initialCount })}</span> <span class="arrow">↓</span>
           </button>
         </div>
       )
@@ -153,17 +157,17 @@ const hasMore = projects.length > initialCount;
     <div class="lightbox-bar">
       <p class="lightbox-caption" id="lightbox-caption"></p>
       <p class="lightbox-counter mono" id="lightbox-counter"></p>
-      <button class="lightbox-close" id="project-lightbox-close" type="button" aria-label="Cerrar">×</button>
+      <button class="lightbox-close" id="project-lightbox-close" type="button" aria-label={t("lightbox.close")}>×</button>
     </div>
-    <button class="lightbox-nav lightbox-prev" id="project-lightbox-prev" type="button" aria-label="Captura anterior">‹</button>
-    <button class="lightbox-nav lightbox-next" id="project-lightbox-next" type="button" aria-label="Captura siguiente">›</button>
+    <button class="lightbox-nav lightbox-prev" id="project-lightbox-prev" type="button" aria-label={t("lightbox.prevShot")}>‹</button>
+    <button class="lightbox-nav lightbox-next" id="project-lightbox-next" type="button" aria-label={t("lightbox.nextShot")}>›</button>
     <div class="lightbox-stage" id="lightbox-stage">
       {
         projects.map((project, i) =>
           project.screenshots?.map((shot, si) => (
             <Image
               src={shot}
-              alt={`${project.name}, captura ${si + 1}`}
+              alt={t("projects.lightboxAlt", { name: project.name, n: si + 1 })}
               width={1600}
               class="lightbox-photo"
               data-group={`project-${i}`}
@@ -189,7 +193,7 @@ const hasMore = projects.length > initialCount;
     toggleBtn.classList.toggle("is-expanded", projectsExpanded);
     toggleBtn.setAttribute("aria-expanded", String(projectsExpanded));
     if (toggleLabel) {
-      toggleLabel.textContent = projectsExpanded ? "Ver menos proyectos" : toggleText;
+      toggleLabel.textContent = projectsExpanded ? (toggleBtn.dataset.lessLabel ?? "") : toggleText;
     }
     if (!projectsExpanded) {
       toggleBtn.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -500,7 +504,8 @@ const hasMore = projects.length > initialCount;
     background: currentColor;
   }
 
-  .status-badge[data-status="EN PROGRESO"] {
+  .status-badge[data-status="EN PROGRESO"],
+  .status-badge[data-status="IN PROGRESS"] {
     background: rgba(255, 180, 84, 0.1);
     color: var(--accent);
     border-color: rgba(255, 180, 84, 0.3);

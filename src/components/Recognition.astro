@@ -1,12 +1,16 @@
 ---
 import { Image } from "astro:assets";
-import { recognitions } from "../data/profile";
+import { getLang, getProfile, useTranslations } from "../i18n/ui";
+
+const lang = getLang(Astro.currentLocale);
+const t = useTranslations(lang);
+const { recognitions } = getProfile(lang);
 ---
 
 <section id="reconocimientos" class="recognition-section">
   <div class="wrap">
-    <p class="eyebrow reveal">// reconocimientos</p>
-    <h2 class="section-heading reveal">Reconocimientos</h2>
+    <p class="eyebrow reveal">{t("rec.eyebrow")}</p>
+    <h2 class="section-heading reveal">{t("rec.heading")}</h2>
 
     <div class="recognition-list">
       {
@@ -36,9 +40,9 @@ import { recognitions } from "../data/profile";
                     type="button"
                     class="gallery-frame"
                     data-lightbox-target={`lightbox-photo-${i}-${pi}`}
-                    aria-label={`Ampliar foto ${pi + 1} de ${item.title}`}
+                    aria-label={t("rec.enlarge", { n: pi + 1, title: item.title })}
                   >
-                    <Image src={photo} alt={`${item.title} — foto ${pi + 1}`} width={520} class="gallery-photo" />
+                    <Image src={photo} alt={t("rec.photoAlt", { title: item.title, n: pi + 1 })} width={520} class="gallery-photo" />
                   </button>
                 ))}
               </div>
@@ -50,15 +54,15 @@ import { recognitions } from "../data/profile";
   </div>
 
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
-    <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Cerrar imagen">×</button>
-    <button class="lightbox-nav lightbox-prev" id="lightbox-prev" type="button" aria-label="Imagen anterior">‹</button>
-    <button class="lightbox-nav lightbox-next" id="lightbox-next" type="button" aria-label="Imagen siguiente">›</button>
+    <button class="lightbox-close" id="lightbox-close" type="button" aria-label={t("lightbox.closeImage")}>×</button>
+    <button class="lightbox-nav lightbox-prev" id="lightbox-prev" type="button" aria-label={t("lightbox.prevImage")}>‹</button>
+    <button class="lightbox-nav lightbox-next" id="lightbox-next" type="button" aria-label={t("lightbox.nextImage")}>›</button>
     {
       recognitions.map((item, i) =>
         item.photos?.map((photo, pi) => (
           <Image
             src={photo}
-            alt={`${item.title} — foto ${pi + 1}`}
+            alt={t("rec.photoAlt", { title: item.title, n: pi + 1 })}
             width={1200}
             class="lightbox-photo"
             id={`lightbox-photo-${i}-${pi}`}
