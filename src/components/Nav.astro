@@ -41,7 +41,7 @@ const otherLang = langs.find((l) => l !== lang) ?? "es";
       ))}
     </a>
 
-    <a class="cv-btn mono" href={personal.cvUrl} download>
+    <a class="cv-btn mono" href={personal.cvUrl} download="cv_miguel_angel_posada.pdf">
       <span class="arrow">↓</span> {t("nav.downloadCv")}
     </a>
 
@@ -59,7 +59,7 @@ const otherLang = langs.find((l) => l !== lang) ?? "es";
         </a>
       ))
     }
-    <a class="mobile-cv-btn" href={personal.cvUrl} download>
+    <a class="mobile-cv-btn" href={personal.cvUrl} download="cv_miguel_angel_posada.pdf">
       <span class="arrow">↓</span> {t("nav.downloadCv")}
     </a>
     <div class="mobile-status">
@@ -70,7 +70,7 @@ const otherLang = langs.find((l) => l !== lang) ?? "es";
 </header>
 
 <!-- Fuera del header: su backdrop-filter haría que `position: fixed` se anclara al header y no a la pantalla -->
-<a class="fab-cv-btn mono" href={personal.cvUrl} download aria-label={t("nav.downloadCv")}>
+<a class="fab-cv-btn mono" href={personal.cvUrl} download="cv_miguel_angel_posada.pdf" aria-label={t("nav.downloadCv")}>
   <span class="arrow">↓</span> {t("nav.downloadCv")}
 </a>
 
