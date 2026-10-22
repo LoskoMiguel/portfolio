@@ -70,7 +70,7 @@ Full Stack Developer con enfoque en backend: APIs, automatizaciones y sistemas e
 
 ## Experiencia profesional
 
-### Desarrollador Backend (Prestación de Servicios)
+### Desarrollador Full Stack (Prestación de Servicios)
 **Arrendamientos del Norte** — Junio 2026 – Actualidad
 - Desarrollo y mantenimiento del CRM empresarial.
 - Clientes mejor organizados y un seguimiento mucho más fácil para el equipo.

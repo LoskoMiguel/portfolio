@@ -17,6 +17,7 @@ import crmDashboard from "../assets/crm/dashboard-privado.webp";
 import fraganciasTienda from "../assets/fragancias/img1.webp";
 import fraganciasProducto from "../assets/fragancias/img2.webp";
 import fraganciasDashboard from "../assets/fragancias/img3.webp";
+import logoArrendamientosDelNorte from "../assets/logos/arrendamientos-del-norte.png";
 
 export const personal = {
   name: "Miguel Ángel Posada Marín",
@@ -146,15 +147,18 @@ export type ExperienceEntry = {
   company: string;
   period: string;
   current: boolean;
+  /** Company logo, rendered next to the role in the experience timeline. */
+  logo?: ImageMetadata;
   bullets: string[];
 };
 
 export const experience: ExperienceEntry[] = [
   {
-    role: "Desarrollador Backend (Prestación de Servicios)",
+    role: "Desarrollador Full Stack (Prestación de Servicios)",
     company: "Arrendamientos del Norte",
     period: "jun. 2026 — actualidad",
     current: true,
+    logo: logoArrendamientosDelNorte,
     bullets: [
       "Desarrollo y mantenimiento del CRM empresarial.",
       "Clientes mejor organizados y un seguimiento mucho más fácil para el equipo.",
@@ -168,6 +172,7 @@ export const experience: ExperienceEntry[] = [
     company: "Arrendamientos del Norte",
     period: "mar. 2026 — jun. 2026",
     current: false,
+    logo: logoArrendamientosDelNorte,
     bullets: [
       "Desarrollo de un CRM con FastAPI, React y PostgreSQL.",
       "Desarrollo de un sistema RPA con Python y Playwright.",
@@ -288,11 +293,11 @@ export const projects: Project[] = [
     name: "CRM Empresarial",
     status: "200 OK",
     description:
-      "Sistema CRM para gestión de arrendamientos: administración de clientes, contratos y procesos internos del negocio.",
-    stack: ["FastAPI", "React", "PostgreSQL"],
+      "Sistema CRM para gestión de arrendamientos, usado en el día a día por Arrendamientos del Norte: administración de clientes, contratos y procesos internos del negocio.",
+    stack: ["FastAPI", "Python", "PostgreSQL", "asyncpg", "React", "TypeScript", "Vite", "WebSockets", "PWA"],
     summary:
       "CRM de Arrendamientos del Norte para gestionar clientes, propiedades, citas, seguimiento y captación de propietarios. Desarrollo full stack.",
-    role: "Desarrollo full stack: backend con FastAPI y PostgreSQL, frontend con React y nuevas funcionalidades de punta a punta",
+    role: "Desarrollo full stack: backend asíncrono con FastAPI y PostgreSQL (asyncpg), frontend con React y TypeScript, chat en tiempo real con WebSockets y notificaciones push",
     screenshots: [crmLogin, crmDashboard],
   },
   {
@@ -315,7 +320,6 @@ export const projects: Project[] = [
     stack: ["FastAPI", "SQLAlchemy", "PostgreSQL", "JWT", "JavaScript"],
     role: "Desarrollo full stack: backend con FastAPI/PostgreSQL (lógica de mora, autenticación JWT) y frontend en HTML/CSS/JS",
     screenshots: [creditoFuturoLogin, creditoFuturoDashboard],
-    repoUrl: "https://github.com/LoskoMiguel/CreditoFuturo",
   },
   {
     name: "VanderBilt — Fragancias",

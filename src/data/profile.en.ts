@@ -43,7 +43,7 @@ export const stack: StackCategory[] = es.stack.map((group) => {
 export const experience: ExperienceEntry[] = [
   {
     ...es.experience[0],
-    role: "Backend Developer (Contractor)",
+    role: "Full Stack Developer (Contractor)",
     period: "Jun 2026 — present",
     bullets: [
       "Development and maintenance of the company CRM.",
@@ -117,10 +117,10 @@ const projectText: Record<string, Pick<Project, "description" | "role" | "summar
   },
   "CRM Empresarial": {
     name: "Business CRM",
-    description: "CRM for rental management: handling clients, contracts and the business's internal processes.",
+    description: "CRM for rental management, used day to day by Arrendamientos del Norte: handling clients, contracts and the business's internal processes.",
     summary:
       "CRM for Arrendamientos del Norte to manage clients, properties, appointments, follow-ups and owner acquisition. Full stack development.",
-    role: "Full stack development: FastAPI and PostgreSQL backend, React frontend and end-to-end features",
+    role: "Full stack development: async FastAPI and PostgreSQL (asyncpg) backend, React and TypeScript frontend, real-time chat over WebSockets and push notifications",
   },
   "Comparativo de Pagos": {
     name: "Payment Comparison",

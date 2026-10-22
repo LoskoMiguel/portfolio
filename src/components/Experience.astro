@@ -1,9 +1,33 @@
 ---
+import { Image } from "astro:assets";
 import { getLang, getProfile, useTranslations } from "../i18n/ui";
+import type { ExperienceEntry } from "../data/profile";
 
 const lang = getLang(Astro.currentLocale);
 const t = useTranslations(lang);
 const { experience } = getProfile(lang);
+
+// Consecutive roles at the same company render as one card with an inner timeline.
+type CompanyGroup = { company: string; logo?: ExperienceEntry["logo"]; current: boolean; roles: ExperienceEntry[] };
+
+const groups: CompanyGroup[] = [];
+for (const job of experience) {
+  const last = groups.at(-1);
+  if (last && last.company === job.company) {
+    last.roles.push(job);
+    last.logo ??= job.logo;
+    last.current ||= job.current;
+  } else {
+    groups.push({ company: job.company, logo: job.logo, current: job.current, roles: [job] });
+  }
+}
+
+// Roles are newest-first, so the span runs from the oldest start to the newest end.
+const groupPeriod = (roles: ExperienceEntry[]) => {
+  const [, end] = roles[0].period.split(" — ");
+  const [start] = roles[roles.length - 1].period.split(" — ");
+  return end ? `${start} — ${end}` : roles[0].period;
+};
 ---
 
 <section id="experiencia" class="exp-section">
@@ -11,37 +35,51 @@ const { experience } = getProfile(lang);
     <p class="eyebrow reveal">{t("exp.eyebrow")}</p>
     <h2 class="section-heading reveal">{t("exp.heading")}</h2>
 
-    <ol class="timeline">
+    <div class="companies">
       {
-        experience.map((job, i) => (
-          <li class="entry reveal" style={`transition-delay:${i * 90}ms`}>
-            <div class="entry-marker">
-              <span class="node" class:list={{ current: job.current }} />
-              {i < experience.length - 1 && <span class="thread" />}
-            </div>
-
-            <div class="entry-card" class:list={{ current: job.current }}>
-              <div class="entry-title-row">
-                <h3 class="entry-role">{job.role}</h3>
-                {job.current && <span class="current-pill mono">{t("exp.current")}</span>}
+        groups.map((group, i) => (
+          <article class="company-card reveal" class:list={{ current: group.current }} style={`transition-delay:${i * 90}ms`}>
+            <header class="company-head">
+              {group.logo && (
+                <Image src={group.logo} alt={group.company} width={128} height={128} class="company-logo" />
+              )}
+              <div>
+                <h3 class="company-name">{group.company}</h3>
+                <p class="company-period mono">{groupPeriod(group.roles)}</p>
               </div>
-              <p class="entry-meta mono">{job.company} · {job.period}</p>
+              {group.current && (
+                <span class="current-pill mono">
+                  <span class="pulse" />
+                  {t("exp.current")}
+                </span>
+              )}
+            </header>
 
-              <ul class="entry-bullets">
-                {job.bullets.map((b) => (
-                  <li>
-                    <svg class="check" viewBox="0 0 16 16" fill="none">
-                      <path d="M3 8.5 6.2 12 13 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </li>
+            <ul class="roles">
+              {group.roles.map((job) => (
+                <li class="role" class:list={{ current: job.current }}>
+                  <div class="role-info">
+                    <h4 class="role-title">{job.role}</h4>
+                    <p class="role-period mono">{job.period}</p>
+                  </div>
+
+                  <ul class="role-bullets">
+                    {job.bullets.map((b) => (
+                      <li>
+                        <svg class="check" viewBox="0 0 16 16" fill="none">
+                          <path d="M3 8.5 6.2 12 13 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          </article>
         ))
       }
-    </ol>
+    </div>
   </div>
 </section>
 
@@ -55,139 +93,227 @@ const { experience } = getProfile(lang);
     margin-top: 0.6rem;
   }
 
-  .timeline {
+  .companies {
     margin-top: 3rem;
     display: flex;
     flex-direction: column;
+    gap: 2rem;
   }
 
-  .entry {
-    display: grid;
-    grid-template-columns: 20px 1fr;
-    gap: 1.5rem;
-  }
-
-  .entry-marker {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .node {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--ink-faint);
-    margin-top: 26px;
-    flex-shrink: 0;
-  }
-
-  .node.current {
-    background: var(--accent);
-    box-shadow: 0 0 0 5px rgba(255, 180, 84, 0.15);
-  }
-
-  .thread {
-    width: 1px;
-    flex: 1;
-    background: var(--line);
-    margin-top: 6px;
-  }
-
-  .entry-card {
-    margin-bottom: 2.25rem;
-    padding: 1.6rem;
+  .company-card {
+    padding: clamp(1.25rem, 3vw, 2.25rem);
     background: var(--bg-elevated);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    transition: transform 0.25s var(--ease-out), border-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+    transition: border-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
   }
 
-  .entry-card:hover {
-    transform: translateY(-3px);
+  .company-card:hover {
     border-color: var(--accent-2);
     box-shadow: 0 20px 40px -28px rgba(94, 234, 212, 0.35);
   }
 
-  .entry-card.current {
+  .company-card.current {
     border-color: rgba(255, 180, 84, 0.35);
     box-shadow: 0 20px 40px -28px rgba(255, 180, 84, 0.25);
   }
 
-  .entry-title-row {
+  .company-head {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 0.7rem;
+    gap: 1.25rem;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid var(--line);
   }
 
-  .entry-role {
+  .company-logo {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+
+  .company-name {
+    font-size: var(--fs-xl);
+  }
+
+  .company-period {
+    margin-top: 0.35rem;
+    font-size: var(--fs-xs);
+    color: var(--ink-muted);
+  }
+
+  /* Inner timeline: a rail on the left with one node per role. */
+  .roles {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .role:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 0.45rem;
+    bottom: -2.5rem;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .role {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+    gap: 1.25rem 2.5rem;
+    padding-left: 2rem;
+  }
+
+  .role::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.45rem;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 2px solid var(--ink-faint);
+    z-index: 1;
+  }
+
+  .role.current::before {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 5px rgba(255, 180, 84, 0.15);
+  }
+
+  .role-title {
     font-size: var(--fs-lg);
+    line-height: 1.3;
+  }
+
+  .role-period {
+    margin-top: 0.5rem;
+    font-size: var(--fs-xs);
+    color: var(--ink-muted);
   }
 
   .current-pill {
+    margin-left: auto;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
     font-size: var(--fs-2xs);
     color: var(--accent);
     border: 1px solid rgba(255, 180, 84, 0.35);
     background: rgba(255, 180, 84, 0.1);
     border-radius: 999px;
-    padding: 0.2rem 0.6rem;
+    padding: 0.3rem 0.75rem;
   }
 
-  .entry-meta {
-    margin-top: 0.4rem;
-    font-size: var(--fs-xs);
-    color: var(--ink-muted);
+  .pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s var(--ease-out) infinite;
   }
 
-  .entry-bullets {
-    margin-top: 1.25rem;
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 180, 84, 0.55);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 7px rgba(255, 180, 84, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pulse {
+      animation: none;
+    }
+  }
+
+  .role.current .role-period {
+    color: var(--accent);
+  }
+
+  .role-bullets {
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
+    gap: 0.8rem;
   }
 
-  .entry-bullets li {
+  .role-bullets li {
     display: flex;
     align-items: flex-start;
-    gap: 0.65rem;
+    gap: 0.7rem;
     font-size: var(--fs-sm);
     color: var(--ink-muted);
-    line-height: 1.5;
+    line-height: 1.55;
   }
 
   .check {
     width: 16px;
     height: 16px;
-    margin-top: 0.25em;
+    margin-top: 0.3em;
     flex-shrink: 0;
     color: var(--accent-2);
   }
 
+  @media (max-width: 860px) {
+    .role {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
   @media (max-width: 560px) {
-    .entry {
-      grid-template-columns: 1fr;
+    .company-head {
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding-bottom: 1.35rem;
     }
 
-    .entry-marker {
-      display: none;
+    .current-pill {
+      margin-left: 0;
     }
 
-    .entry-card {
-      padding: 1.2rem;
-      margin-bottom: 1.4rem;
+    .company-logo {
+      width: 52px;
+      height: 52px;
     }
 
-    .entry-role {
+    .company-name {
+      font-size: var(--fs-lg);
+    }
+
+    .roles {
+      margin-top: 1.5rem;
+      gap: 2rem;
+    }
+
+    .role {
+      gap: 1rem;
+      padding-left: 1.6rem;
+    }
+
+    .role:not(:last-child)::after {
+      bottom: -2rem;
+    }
+
+    .role-title {
       font-size: var(--fs-base);
     }
 
-    .entry-bullets {
-      margin-top: 1rem;
-      gap: 0.55rem;
+    .role-bullets {
+      gap: 0.65rem;
     }
 
-    .entry-bullets li {
+    .role-bullets li {
       font-size: var(--fs-xs);
     }
   }
